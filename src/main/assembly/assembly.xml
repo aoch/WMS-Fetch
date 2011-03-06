@@ -1,0 +1,30 @@
+<assembly>
+	<id>${project.version}</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<unpack>true</unpack>
+			<scope>compile</scope>
+			<useProjectArtifact>true</useProjectArtifact>
+		</dependencySet>
+	</dependencySets>
+	<files>
+		<file>
+			<source>src/main/java/log4j.xml</source>
+			<outputDirectory>.</outputDirectory>
+		</file>
+		<file>
+			<source>src/main/resources/com/convergys/wmsfetch/releasenotes/ReleaseNotesTemplate.vm
+			</source>
+			<outputDirectory>.</outputDirectory>
+		</file>
+		<file>
+			<source>src/main/resources/com/convergys/wmsfetch/releasenotes/PatchTemplate.vm
+			</source>
+			<outputDirectory>.</outputDirectory>
+		</file>
+	</files>
+</assembly>

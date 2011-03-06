@@ -1,0 +1,6 @@
+<project name="myProject" default="createReleaseNotes" basedir=".">
+	<taskdef name="releaseNotes" classname="com.convergys.wmsfetch.build.ant.WMSFetchANT" classpath="target/classes:" />
+	<target name="createReleaseNotes">
+		<releaseNotes wmsUsername="aoch" wmsPassword="T6y7u8i9" mailServerUsername="andrew.och@converygs.com" mailServerPassword="secret" releaseid="AWCC.0.0.2.126" outfile="AWCC.0.0.2.126.txt" emails="andrew.och@convergys.com;charlie.xiongya.you@convergys.com" />
+	</target>
+</project>

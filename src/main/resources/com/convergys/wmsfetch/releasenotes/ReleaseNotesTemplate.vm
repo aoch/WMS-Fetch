@@ -1,0 +1,38 @@
+-----------------------------------------------------------
+Date:          $date
+Release Notes: $releaseTitle
+Release:       [$release]
+$component VERSION:  $version
+-----------------------------------------------------------
+SCHEMA CHANGES:
+    None
+    CODE CHANGES WITH IN THIS RELEASE:
+    Refer To The Category $release
+    
+TR FIXES INFORMATION:  
+$fixedTRs
+
+TR CANCEL INFORMATION:
+$cancelledTRs
+
+FUNCTIONALITY EFFECTED:
+    None
+    
+KNOWN ISSUES:
+    None
+
+PATCHES FOR THE KNOWN ISSUES:
+    None
+  
+COMPATIBLE SOFTWARE VERSIONS:
+    Weblogic 10
+    Oracle 10g
+   
+Compatible Components:
+$dependencyVersions
+
+FTP ADDRESS:
+    $ftpURL
+
+IMPORTANT NOTES:
+    $notes

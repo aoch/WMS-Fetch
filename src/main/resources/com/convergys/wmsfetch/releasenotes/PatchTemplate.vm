@@ -1,0 +1,44 @@
+Client Name:        $clientName
+Client Reference:   $clientRef
+Component:          $component
+Release Number:     $releaseNumber
+Patch Number:       $patchNumber
+Patch Dependencies: all patches before are supplied.
+Date:               $date
+----------------------------------------------------
+
+Issue: TR-$TRnumber [$TRtitle]
+
+Description: 
+$TRdescription
+----------------------------------------------------
+Root Cause:
+$rootCause
+----------------------------------------------------
+
+Resolution Summary:
+$resolutionSummary
+
+Does this patch release impact any published APIs? Answer: $apiImpact
+{ If YES, Please provide details here }
+Does this patch contain any DB schema changes? Answer: $dbImpact
+{ If YES, Please provide details here }
+Does this patch contain any CL changes? Answer: $clImpact
+{ If YES, Please provide details here }
+Does this patch release impact any User Interfaces (UIs)? Answer: $uiImpact 
+{ If YES, Please provide details here }
+
+DELIVERABLES
+1. Files change list:
+{ input  file list    Branch: XXXXXX   Version:XXXXXXXX }
+
+2. DB script file:
+{None}
+{Please refer to the SQL file in the patch, if any.}
+----------------------------------------------------
+
+Installation Instructions:
+1.Shutdown weblogic
+2.Check the file list and source code. Do necessary code merge if their are conflicts with custom code.
+3.Unzip deploy folder to <INSTALL_PATH>/deploy
+4.Start weblogic.

@@ -1,0 +1,33 @@
+<build>
+	<plugins>
+		<plugin>
+			<groupId>com.convergys</groupId>
+			<artifactId>wmsfetch</artifactId>
+			<version>1.0.4</version>
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>releaseNotes</goal>
+					</goals>
+				</execution>
+			</executions>
+			<configuration>
+				<wmsUsername>aoch</wmsUsername>
+				<wmsPassword>T6y7u8i9</wmsPassword>
+				<mailServerUsername>andrew.och@converygs.com</mailServerUsername>
+				<mailServerPassword>secret</mailServerPassword>
+				<releaseid>AWCC.0.0.2.126</releaseid>
+				<outfile>AWCC.0.0.2.126.txt</outfile>
+				<emails>
+					<param>andrew.och@convergys.com</param>
+					<param>charlie.xiongya.you@convergys.com</param>
+				</emails>
+				<variableMap>
+					<dependencyVersions>EBOS-4.4.3</dependencyVersions>
+					<test>value</test>
+				</variableMap>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>

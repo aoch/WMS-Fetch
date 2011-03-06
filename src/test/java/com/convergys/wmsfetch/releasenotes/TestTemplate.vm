@@ -1,0 +1,7 @@
+Client Name:        $clientName
+Client Reference:   $clientRef
+Component:          $component
+Release Number:     $releaseNumber
+Patch Number:       $patchNumber
+Patch Dependencies: all patches before are supplied.
+Date:               $date
