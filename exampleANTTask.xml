@@ -1,6 +1,6 @@
 <project name="myProject" default="createReleaseNotes" basedir=".">
 	<taskdef name="releaseNotes" classname="com.convergys.wmsfetch.build.ant.WMSFetchANT" classpath="target/classes:" />
 	<target name="createReleaseNotes">
-		<releaseNotes wmsUsername="aoch" wmsPassword="T6y7u8i9" mailServerUsername="andrew.och@converygs.com" mailServerPassword="secret" releaseid="AWCC.0.0.2.126" outfile="AWCC.0.0.2.126.txt" emails="andrew.och@convergys.com;charlie.xiongya.you@convergys.com" />
+		<releaseNotes wmsUsername="aoch" wmsPassword="secretPassword" mailServerUsername="andrew.och@convergys.com" mailServerPassword="anotherSecretPassword" releaseid="AWCC.1.4.9" outfile="AWCC.1.4.9.txt" emails="andrew.och@convergys.com;charlie.xiongya.you@convergys.com" variables="dependencyVersions=EBOS-4.4.3;notes=None;compatibleSoftware=Weblogic-10 Oracle-10G" />
 	</target>
 </project>

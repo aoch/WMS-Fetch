@@ -10,7 +10,7 @@
 		<name>Convergys</name>
 		<url>http://www.convergys.com</url>
 	</organization>
-	<description>Connect to WMS to retrieve release notes for a patch
+	<description>Fetch Data from WMS via CLI, ANT, Maven to help create things like: release notes etc.
 	</description>
 	<developers>
 		<developer>
