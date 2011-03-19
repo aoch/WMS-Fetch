@@ -19,7 +19,7 @@ public class WMSItem implements Serializable {
 	private static final long serialVersionUID = 8479413501845185543L;
 
 	// Default Empty string value
-	public static final String EMPTY = "\t ";
+	public static final String EMPTY = "\t";
 
 	// Hash Map keys for DB to populate Velocity template variables
 	public static final String wmsItemIDKey = "item_id";
