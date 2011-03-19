@@ -2,7 +2,8 @@
 Date:          $date
 Release Notes: $releaseTitle
 Release:       [$release]
-$component VERSION:  $version
+$component VERSION:   $version
+$headerLastLine
 -----------------------------------------------------------
 SCHEMA CHANGES:
     None
@@ -14,22 +15,18 @@ $fixedTRs
 
 TR CANCEL INFORMATION:
 $cancelledTRs
-
-FUNCTIONALITY EFFECTED:
-    None
-    
+   
 KNOWN ISSUES:
-    None
+    $knownIssues
 
 PATCHES FOR THE KNOWN ISSUES:
-    None
+    $patches
   
 COMPATIBLE SOFTWARE VERSIONS:
-    Weblogic 10
-    Oracle 10g
+    $compatibleSoftware
    
 Compatible Components:
-$dependencyVersions
+    $dependencyVersions
 
 FTP ADDRESS:
     $ftpURL

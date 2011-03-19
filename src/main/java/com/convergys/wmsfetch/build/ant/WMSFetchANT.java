@@ -17,16 +17,21 @@ import com.convergys.wmsfetch.build.common.WMSFetchBuild;
  * <code><taskdef name="releaseNotes" classname="com.convergys.wmsfetch.build.ant.WMSFetchANT"/></code>
  * 
  * In order to call the task use the following example: <code>
-<target name="createReleaseNotes">
-    <releaseNotes wmsUsername="aoch" 
-                  wmsPassword="T6y7u8i9"
-                  mailServerUsername="andrew.och@convergys.com" 
-                  mailServerPassword="secret"
-                  releaseid="AWCC.0.0.2.126"
-                  outfile="AWCC.0.0.2.126.txt"
-                  emails="andrew.och@convergys.com;charlie.xiongya.you@convergys.com"
-                  variables="dependencyVersions=EBOS-4.4.3;test=test2" />
-    </target>
+<project name="myProject" default="createReleaseNotes" basedir=".">
+	<taskdef name="releaseNotes" classname="com.convergys.wmsfetch.build.ant.WMSFetchANT" classpath="." />
+	<target name="createReleaseNotes">
+		<releaseNotes 
+	            wmsUsername="aoch" 
+	            wmsPassword="secret" 
+	            mailServerUsername="andrew.och@convergys.com" 
+	            mailServerPassword="secret" 
+	            releaseid="AWCC.1.4.13" 
+	            outputDirectory="D:/testing/"
+	            outfile="AWCC.1.4.13.txt" 
+	            emails="andrew.och@convergys.com" 
+	            variables="headerLastLine=AWCC Version: 1.4.9.1;compatibleSoftware=Weblogic-10 Oracle-10g;releaseTitle=Web Self-Care;component=WSC;notes=None;ftpURL=ftp://10.148.130.111/WSC/WSC-1.4.9;dependencyVersions=EBOS-4.4.4.4 OM-4.1.1029.1 AWCCCSM-1.4.14 AWCCOM-1.4.14 PF-4.0.18 AWCCRB-1.4.14 RB-4.4.5 ECA-4.4.5.18 CSM-5.3.235 AWCCECA-1.4.14 AWCCOFM-1.4.13 IM-3.2.1 WSO-1.4.9" />
+	</target>
+</project>
 </code>
  * 
  * The emails field is separated with a semi-colon
@@ -137,23 +142,33 @@ public class WMSFetchANT extends Task {
 			logger.warn(warnMsg);
 		}
 
-		File outputDir = new File(outputDirectory);
-		if (!outputDir.isDirectory()) {
-			String errorMsg = String.format("This is not a directory: [%s]",
-					new Object[] { outputDir });
-			logger.error(errorMsg);
-		}
+		if (outputDirectory != null && !outputDirectory.equalsIgnoreCase("")) {
+			File outputDir = new File(outputDirectory);
+			if (!outputDir.isDirectory()) {
+				String errorMsg = String.format(
+						"This is not a directory: [%s]",
+						new Object[] { outputDir });
+				logger.error(errorMsg);
+			}
 
-		boolean success = WMSFetchBuild.execReleaseNotes(outputDir, outfile,
-				wmsUsername, wmsPassword, releaseid, emailAddresses,
-				mailServerUsername, mailServerPassword, url, variableMap);
+			boolean success = WMSFetchBuild.execReleaseNotes(outputDir,
+					outfile, wmsUsername, wmsPassword, releaseid,
+					emailAddresses, mailServerUsername, mailServerPassword,
+					url, variableMap);
 
-		if (success) {
-			String infoMsg = String.format("ReleaseNotes for: [%s] complete",
-					new Object[] { releaseid });
-			logger.info(infoMsg);
+			if (success) {
+				String infoMsg = String.format(
+						"ReleaseNotes for: [%s] complete",
+						new Object[] { releaseid });
+				logger.info(infoMsg);
+			} else {
+				String warnMsg = String.format("ReleaseNotes for: [%s] failed",
+						new Object[] { releaseid });
+				logger.warn(warnMsg);
+			}
 		} else {
-			String warnMsg = String.format("ReleaseNotes for: [%s] failed",
+			String warnMsg = String.format(
+					"ReleaseNotes for: [%s] failed. Output Directory Missing",
 					new Object[] { releaseid });
 			logger.warn(warnMsg);
 		}

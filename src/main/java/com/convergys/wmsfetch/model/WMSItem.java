@@ -18,18 +18,22 @@ import java.util.Map;
 public class WMSItem implements Serializable {
 	private static final long serialVersionUID = 8479413501845185543L;
 
-	// Hash Map keys for Velocity template variables
-	public static final String wmsItemIDKey = "TRnumber";
-	public static final String descriptionKey = "TRdescription";
-	public static final String titleKey = "TRtitle";
+	// Default Empty string value
+	public static final String EMPTY = "\t ";
+
+	// Hash Map keys for DB to populate Velocity template variables
+	public static final String wmsItemIDKey = "item_id";
+	public static final String typeKey = "item_type";
+	public static final String descriptionKey = "DESCRIPTION";
+	public static final String titleKey = "title";
 	public static final String internalReferKey = "internalRefer";
 	public static final String causeKey = "rootCause";
 	public static final String resolutionKey = "resolutionSummary";
 	public static final String clientKey = "clientName";
-	public static final String clientRefKey = "clientRef";
+	public static final String clientRefKey = "CLIENT_REFERENCE";
 	public static final String productKey = "component";
 	public static final String dateKey = "date";
-	public static final String releaseKey = "externalReference";
+	public static final String releaseKey = "external_reference";
 	public static final String severityKey = "CLIENT_PRIORITY";
 	public static final String statusKey = "STATUS_NAME";
 	public static final String developerKey = "RESPONSIBLE_ANALYST";
@@ -59,7 +63,7 @@ public class WMSItem implements Serializable {
 	private String severity;
 
 	private String status;
-	
+
 	private String developer;
 
 	/**
@@ -70,7 +74,8 @@ public class WMSItem implements Serializable {
 	}
 
 	/**
-	 * @param developer the developer to set
+	 * @param developer
+	 *            the developer to set
 	 */
 	public void setDeveloper(String developer) {
 		this.developer = developer;
@@ -201,11 +206,18 @@ public class WMSItem implements Serializable {
 	}
 
 	/**
+	 * If set to null, replaced with <code>WMSItem.EMPTY</code> otherwise value
+	 * enclosed in square brackets
+	 * 
 	 * @param clientRef
 	 *            the clientRef to set
 	 */
 	public void setClientRef(String clientRef) {
-		this.clientRef = clientRef;
+		if (clientRef == null) {
+			this.clientRef = WMSItem.EMPTY;
+		} else {
+			this.clientRef = "[" + clientRef + "]";
+		}
 	}
 
 	public void setDescription(String description) {

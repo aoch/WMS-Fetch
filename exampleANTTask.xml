@@ -1,6 +1,6 @@
 <project name="myProject" default="createReleaseNotes" basedir=".">
-	<taskdef name="releaseNotes" classname="com.convergys.wmsfetch.build.ant.WMSFetchANT" classpath="target/classes:" />
+	<taskdef name="releaseNotes" classname="com.convergys.wmsfetch.build.ant.WMSFetchANT" classpath="." />
 	<target name="createReleaseNotes">
-		<releaseNotes wmsUsername="aoch" wmsPassword="secretPassword" mailServerUsername="andrew.och@convergys.com" mailServerPassword="anotherSecretPassword" releaseid="AWCC.1.4.9" outfile="AWCC.1.4.9.txt" emails="andrew.och@convergys.com;charlie.xiongya.you@convergys.com" variables="dependencyVersions=EBOS-4.4.3;notes=None;compatibleSoftware=Weblogic-10 Oracle-10G" />
+		<releaseNotes wmsUsername="aoch" wmsPassword="secret" mailServerUsername="andrew.och@convergys.com" mailServerPassword="secret" releaseid="AWCC.1.4.13" outputDirectory="D:/testing/" outfile="AWCC.1.4.13.txt" emails="andrew.och@convergys.com" variables="headerLastLine=AWCC Version: 1.4.9.1;compatibleSoftware=Weblogic-10 Oracle-10g;releaseTitle=Web Self-Care;component=WSC;notes=None;ftpURL=ftp://10.148.130.111/WSC/WSC-1.4.9;dependencyVersions=EBOS-4.4.4.4 OM-4.1.1029.1 AWCCCSM-1.4.14 AWCCOM-1.4.14 PF-4.0.18 AWCCRB-1.4.14 RB-4.4.5 ECA-4.4.5.18 CSM-5.3.235 AWCCECA-1.4.14 AWCCOFM-1.4.13 IM-3.2.1 WSO-1.4.9" />
 	</target>
 </project>

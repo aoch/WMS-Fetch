@@ -58,7 +58,8 @@ public class ReleaseNoteGeneratorImpl implements IReportGenerator {
 
 		if (output != null) {
 
-			// Merge user defined variables with WMS variables
+			// Merge user defined variables with WMS variables (override
+			// defaults)
 			if (variableMap != null) {
 				variables.putAll(variableMap);
 			}
@@ -196,14 +197,17 @@ public class ReleaseNoteGeneratorImpl implements IReportGenerator {
 
 		StringBuffer fixedTRs = new StringBuffer();
 		StringBuffer cancelledTRs = new StringBuffer();
+
 		if (wmsItems != null) {
 			for (WMSItem wmsItem : wmsItems) {
 				String version = getVersion(wmsItem.getRelease());
 				variables.put("version", version);
 				variables.put("release", wmsItem.getRelease());
-				String infoLine = " " + wmsItem.getId() + "\tSeverity: ["
-						+ wmsItem.getSeverity() + "]\t" + wmsItem.getTitle()
-						+ "\n";
+
+				String infoLine = String.format(
+						" %s\tSeverity: [%s]\t%s\t%s\n", new Object[] {
+								wmsItem.getId(), wmsItem.getSeverity(),
+								wmsItem.getClientRef(), wmsItem.getTitle() });
 				if (wmsItem.getStatus().equalsIgnoreCase("Cancelled")) {
 					cancelledTRs.append(infoLine);
 				} else {
@@ -211,7 +215,7 @@ public class ReleaseNoteGeneratorImpl implements IReportGenerator {
 				}
 			}
 
-			// If no data put none
+			// If no data put defaults
 			if (fixedTRs.toString().equalsIgnoreCase("")) {
 				variables.put("fixedTRs", "    None");
 			} else {
@@ -226,6 +230,11 @@ public class ReleaseNoteGeneratorImpl implements IReportGenerator {
 
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			variables.put("date", formatter.format(new Date()));
+			variables.put("headerLastLine", "");
+			variables.put("knownIssues", "None");
+			variables.put("patches", "None");
+			variables.put("notes", "None");
+			variables.put("compatibleSoftware", "None");
 		} else {
 			logger.warn("wmsItems is NULL");
 		}

@@ -6,6 +6,7 @@ package com.convergys.wmsfetch.net.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -137,54 +138,57 @@ public class WMSClientJDBCImpl implements IWMSClient {
 	}
 
 	private List<WMSItem> queryRelease(String wmsReleaseID) throws Exception {
-		List<WMSItem> wmsItems = new ArrayList<WMSItem>();
 
-		String queryStr = "SELECT item_id, item_type, STATUS_NAME, title, CLIENT_PRIORITY,INTERNAL_PRIORITY,RESPONSIBLE_ANALYST,REQUESTED_DELIVERY_DATE,COMMITMENT_DATE,external_reference,DESCRIPTION "
-				+ "FROM item_rpt "
-				+ "WHERE external_reference = '"
-				+ wmsReleaseID
-				+ "' "
-				+ "AND item_type = 'TR' "
-				+ "ORDER BY CLIENT_PRIORITY";
-		logger.debug(queryStr);
-
-		ResultSet rs = query(url, username, password, queryStr);
-
-		while (rs.next()) {
-			WMSItem wmsItem = new WMSItem();
-			wmsItem.setRelease(rs.getString("external_reference"));
-			wmsItem.setTitle(rs.getString("title"));
-			wmsItem.setId(rs.getString("item_id"));
-			wmsItem.setDescription(rs.getString("DESCRIPTION"));
-			wmsItem.setProduct(rs.getString("external_reference"));
-			wmsItem.setSeverity(rs.getString("CLIENT_PRIORITY"));
-			wmsItem.setStatus(rs.getString("STATUS_NAME"));
-			wmsItems.add(wmsItem);
-		}
+		String queryStr = String
+				.format(
+						"SELECT %s,item_type,%s,%s,%s,%s,INTERNAL_PRIORITY,%s,REQUESTED_DELIVERY_DATE,COMMITMENT_DATE,%s,%s "
+								+ "FROM item_rpt "
+								+ "WHERE %s = '%s' AND item_type = 'TR' ORDER BY CLIENT_PRIORITY",
+						new Object[] { WMSItem.wmsItemIDKey,
+								WMSItem.clientRefKey, WMSItem.statusKey,
+								WMSItem.titleKey, WMSItem.severityKey,
+								WMSItem.developerKey, WMSItem.releaseKey,
+								WMSItem.descriptionKey, WMSItem.releaseKey,
+								wmsReleaseID });
+		logger.info(queryStr);
+		List<WMSItem> wmsItems = buildWMSItems(query(url, username, password,
+				queryStr));
 		return wmsItems;
 	}
 
 	private List<WMSItem> queryWMSItem(String wmsItemID) throws Exception {
-		List<WMSItem> wmsItems = new ArrayList<WMSItem>();
 
-		String queryStr = "SELECT item_id,item_type,STATUS_NAME,title,CLIENT_PRIORITY,INTERNAL_PRIORITY,RESPONSIBLE_ANALYST,REQUESTED_DELIVERY_DATE,COMMITMENT_DATE,external_reference,DESCRIPTION "
-				+ "FROM item_rpt "
-				+ "WHERE  item_type = 'TR' "
-				+ "AND item_id = '" + wmsItemID + "'";
+		String queryStr = String
+				.format(
+						"SELECT %s,$s,%s,%s,%s,%s,INTERNAL_PRIORITY,%s,REQUESTED_DELIVERY_DATE,COMMITMENT_DATE,%s,%s "
+								+ "FROM item_rpt "
+								+ "WHERE  %s = 'TR' "
+								+ "AND %s = '%s'", new Object[] {
+								WMSItem.wmsItemIDKey, WMSItem.typeKey,
+								WMSItem.clientRefKey, WMSItem.statusKey,
+								WMSItem.titleKey, WMSItem.severityKey,
+								WMSItem.developerKey, WMSItem.releaseKey,
+								WMSItem.descriptionKey, WMSItem.typeKey,
+								WMSItem.wmsItemIDKey, wmsItemID });
 		logger.debug(queryStr);
+		List<WMSItem> wmsItems = buildWMSItems(query(url, username, password,
+				queryStr));
+		return wmsItems;
+	}
 
-		ResultSet resultSet = query(url, username, password, queryStr);
-
+	private List<WMSItem> buildWMSItems(ResultSet resultSet) throws Exception {
+		List<WMSItem> wmsItems = new ArrayList<WMSItem>();
 		while (resultSet.next()) {
 			WMSItem wmsItem = new WMSItem();
-			wmsItem.setRelease(resultSet.getString("external_reference"));
-			wmsItem.setTitle(resultSet.getString("title"));
-			wmsItem.setId(resultSet.getString("item_id"));
-			wmsItem.setDescription(resultSet.getString("DESCRIPTION"));
-			wmsItem.setProduct(resultSet.getString("external_reference"));
+			wmsItem.setRelease(resultSet.getString(WMSItem.releaseKey));
+			wmsItem.setTitle(resultSet.getString(WMSItem.titleKey));
+			wmsItem.setId(resultSet.getString(WMSItem.wmsItemIDKey));
+			wmsItem.setDescription(resultSet.getString(WMSItem.descriptionKey));
+			wmsItem.setProduct(resultSet.getString(WMSItem.releaseKey));
 			wmsItem.setSeverity(resultSet.getString("CLIENT_PRIORITY"));
 			wmsItem.setStatus(resultSet.getString("STATUS_NAME"));
-			wmsItem.setDeveloper(resultSet.getString("RESPONSIBLE_ANALYST"));
+			wmsItem.setDeveloper(resultSet.getString(WMSItem.developerKey));
+			wmsItem.setClientRef(resultSet.getString(WMSItem.clientRefKey));
 			wmsItems.add(wmsItem);
 		}
 		return wmsItems;
@@ -251,7 +255,7 @@ public class WMSClientJDBCImpl implements IWMSClient {
 		String password = "ern8UwzE";
 		String sql = "SELECT item_id, item_type, STATUS_NAME, title, CLIENT_PRIORITY,INTERNAL_PRIORITY,RESPONSIBLE_ANALYST,REQUESTED_DELIVERY_DATE,COMMITMENT_DATE,external_reference,DESCRIPTION "
 				+ "FROM item_rpt "
-				+ "WHERE external_reference like '% WSC%' "
+				+ "WHERE external_reference like '%WSC%' "
 				+ "AND item_type = 'TR' " + "ORDER BY CLIENT_PRIORITY";
 
 		ResultSet rs = wmsClient.query(url, username, password, sql);
@@ -261,9 +265,33 @@ public class WMSClientJDBCImpl implements IWMSClient {
 				System.out.println(rs.getString("item_id"));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getLocalizedMessage());
 		}
 		System.out.println("Complete");
+	}
+
+	/**
+	 * Print out all column names for a result set
+	 * 
+	 * @param resultSet
+	 * @throws SQLException
+	 */
+	public static void getColumnNames(ResultSet resultSet) throws SQLException {
+		if (resultSet == null) {
+			return;
+		}
+
+		// get result set meta data
+		ResultSetMetaData rsMetaData = resultSet.getMetaData();
+		int numberOfColumns = rsMetaData.getColumnCount();
+
+		// get the column names; column indexes start from 1
+		for (int i = 1; i < numberOfColumns + 1; i++) {
+			String columnName = rsMetaData.getColumnName(i);
+			// Get the name of the column's table name
+			String tableName = rsMetaData.getTableName(i);
+			System.out.println("column name=" + columnName + " table="
+					+ tableName + "");
+		}
 	}
 }
