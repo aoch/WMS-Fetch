@@ -28,13 +28,108 @@ import com.convergys.wmsfetch.net.IWMSClient;
  * 
  */
 public class WMSClientJDBCImpl implements IWMSClient {
-
 	private static transient final Logger logger = Logger
 			.getLogger(WMSClientJDBCImpl.class);
 
-	public static final String THIN_CLIENT = "jdbc:oracle:thin:@";
+	private static ResourceBundle resourceBundle = ResourceBundle
+			.getBundle("com.convergys.wmsfetch.net.wmsConfig");
 
-	public static final String SERVICE_NAME = "(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=%s) (PORT=%s)))(CONNECT_DATA=(SERVICE_NAME=WMS.WORLD)))";
+	public static final String THIN_CLIENT = resourceBundle
+			.getString("thin_client");
+
+	public static final String SERVICE_NAME = resourceBundle
+			.getString("service_name");
+
+	/**
+	 * Print out all column names for a result set
+	 * 
+	 * @param resultSet
+	 * @throws SQLException
+	 */
+	public static void getColumnNames(ResultSet resultSet) throws SQLException {
+		if (resultSet == null) {
+			return;
+		}
+
+		// get result set meta data
+		ResultSetMetaData rsMetaData = resultSet.getMetaData();
+		int numberOfColumns = rsMetaData.getColumnCount();
+
+		// get the column names; column indexes start from 1
+		for (int i = 1; i < numberOfColumns + 1; i++) {
+			String columnName = rsMetaData.getColumnName(i);
+			// Get the name of the column's table name
+			String tableName = rsMetaData.getTableName(i);
+			System.out.println("column name=" + columnName + " table="
+					+ tableName + "");
+		}
+	}
+
+	public static void main(String[] args) {
+		// queryWrongExtRefTRs();
+		queryOutstandingTRs();
+	}
+
+	private static void queryWrongExtRefTRs() {
+		WMSClientJDBCImpl wmsClient = new WMSClientJDBCImpl();
+		wmsClient.setUrl(null);
+		String url = wmsClient.getUrl();
+		String username = "aoch";
+		String password = "ern8UwzE";
+		String sql = "SELECT item_id, item_type, STATUS_NAME, title, CLIENT_PRIORITY,INTERNAL_PRIORITY,RESPONSIBLE_ANALYST,REQUESTED_DELIVERY_DATE,COMMITMENT_DATE,external_reference,DESCRIPTION "
+				+ "FROM item_rpt "
+				+ "WHERE external_reference like '%WSC%' "
+				+ "AND item_type = 'TR' " + "ORDER BY CLIENT_PRIORITY";
+
+		ResultSet rs = wmsClient.query(url, username, password, sql);
+		System.out.println("Started");
+		try {
+			while (rs.next()) {
+				System.out.println(rs.getString("item_id"));
+			}
+		} catch (SQLException e) {
+			logger.error(e.getLocalizedMessage());
+		}
+		System.out.println("Complete");
+	}
+
+	private static void queryOutstandingTRs() {
+		WMSClientJDBCImpl wmsClient = new WMSClientJDBCImpl();
+		wmsClient.setUrl(null);
+		String url = wmsClient.getUrl();
+		String username = "aoch";
+		String password = "ern8UwzE";
+		String sql = "SELECT distinct item_id,item_type,STATUS_NAME,environment_id,title,CLIENT_PRIORITY,INTERNAL_PRIORITY,RESPONSIBLE_ANALYST,CREATED_DATE_PREF,LAST_UPDATED_DTTM,HIGH_LEVEL_BUSN_REQ_APPROVAL,REQUESTED_DELIVERY_DATE,COMMITMENT_DATE,internal_reference,external_reference,DESCRIPTION from item_rpt "
+				+ "WHERE CLIENT_SHORT_NAME = 'AWCC' "
+				+ "AND item_type = 'TR' "
+				+ "AND (PROJECT_FACILITATOR = 'RWU' OR PROJECT_FACILITATOR = 'AOCH') "
+				+ "AND STATUS_NAME != 'Closed' "
+				+ "AND STATUS_NAME != 'Cancelled' "
+				+ "AND STATUS_NAME != 'Resolve' "
+				+ "AND STATUS_NAME != 'Complete' "
+				+ "AND STATUS_NAME != 'T3-Passed' "
+				+ "AND STATUS_NAME != 'ST-Testing' "
+				+ "AND STATUS_NAME != 'ST-Assign' "
+				+ "AND STATUS_NAME != 'Await-Impl' "
+				+ "AND STATUS_NAME != 'ST-Passed' "
+				+ "AND STATUS_NAME != 'T2-Passed' "
+				+ "AND TITLE not like 'GEN%'" + "ORDER BY STATUS_NAME";
+		ResultSet rs = wmsClient.query(url, username, password, sql);
+
+		StringBuffer output = new StringBuffer("");
+		try {
+			while (rs.next()) {
+				output
+						.append(String.format("%s\t\t%s\n", new Object[] {
+								rs.getString("item_id"),
+								rs.getString("STATUS_NAME") }));
+
+			}
+		} catch (SQLException e) {
+			logger.error(e.getLocalizedMessage());
+		}
+		System.out.println(output);
+	}
 
 	private String username;
 
@@ -46,11 +141,26 @@ public class WMSClientJDBCImpl implements IWMSClient {
 
 	private Statement statement = null;
 
-	private ResourceBundle resourceBundle;
-
 	public WMSClientJDBCImpl() {
-		resourceBundle = ResourceBundle
-				.getBundle("com.convergys.wmsfetch.net.wmsConfig");
+
+	}
+
+	private List<WMSItem> buildWMSItems(ResultSet resultSet) throws Exception {
+		List<WMSItem> wmsItems = new ArrayList<WMSItem>();
+		while (resultSet.next()) {
+			WMSItem wmsItem = new WMSItem();
+			wmsItem.setRelease(resultSet.getString(WMSItem.releaseKey));
+			wmsItem.setTitle(resultSet.getString(WMSItem.titleKey));
+			wmsItem.setId(resultSet.getString(WMSItem.wmsItemIDKey));
+			wmsItem.setDescription(resultSet.getString(WMSItem.descriptionKey));
+			wmsItem.setProduct(resultSet.getString(WMSItem.releaseKey));
+			wmsItem.setSeverity(resultSet.getString("CLIENT_PRIORITY"));
+			wmsItem.setStatus(resultSet.getString("STATUS_NAME"));
+			wmsItem.setDeveloper(resultSet.getString(WMSItem.developerKey));
+			wmsItem.setClientRef(resultSet.getString(WMSItem.clientRefKey));
+			wmsItems.add(wmsItem);
+		}
+		return wmsItems;
 	}
 
 	/*
@@ -83,6 +193,14 @@ public class WMSClientJDBCImpl implements IWMSClient {
 		// Finish the progress bar
 		progressReporter.stopProgress();
 		return wmsItems;
+	}
+
+	/**
+	 * 
+	 * @return url
+	 */
+	public String getUrl() {
+		return url;
 	}
 
 	/**
@@ -157,7 +275,6 @@ public class WMSClientJDBCImpl implements IWMSClient {
 	}
 
 	private List<WMSItem> queryWMSItem(String wmsItemID) throws Exception {
-
 		String queryStr = String
 				.format(
 						"SELECT %s,$s,%s,%s,%s,%s,INTERNAL_PRIORITY,%s,REQUESTED_DELIVERY_DATE,COMMITMENT_DATE,%s,%s "
@@ -173,24 +290,6 @@ public class WMSClientJDBCImpl implements IWMSClient {
 		logger.debug(queryStr);
 		List<WMSItem> wmsItems = buildWMSItems(query(url, username, password,
 				queryStr));
-		return wmsItems;
-	}
-
-	private List<WMSItem> buildWMSItems(ResultSet resultSet) throws Exception {
-		List<WMSItem> wmsItems = new ArrayList<WMSItem>();
-		while (resultSet.next()) {
-			WMSItem wmsItem = new WMSItem();
-			wmsItem.setRelease(resultSet.getString(WMSItem.releaseKey));
-			wmsItem.setTitle(resultSet.getString(WMSItem.titleKey));
-			wmsItem.setId(resultSet.getString(WMSItem.wmsItemIDKey));
-			wmsItem.setDescription(resultSet.getString(WMSItem.descriptionKey));
-			wmsItem.setProduct(resultSet.getString(WMSItem.releaseKey));
-			wmsItem.setSeverity(resultSet.getString("CLIENT_PRIORITY"));
-			wmsItem.setStatus(resultSet.getString("STATUS_NAME"));
-			wmsItem.setDeveloper(resultSet.getString(WMSItem.developerKey));
-			wmsItem.setClientRef(resultSet.getString(WMSItem.clientRefKey));
-			wmsItems.add(wmsItem);
-		}
 		return wmsItems;
 	}
 
@@ -234,10 +333,6 @@ public class WMSClientJDBCImpl implements IWMSClient {
 		logger.info(infoMsg);
 	}
 
-	public String getUrl() {
-		return url;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -245,53 +340,5 @@ public class WMSClientJDBCImpl implements IWMSClient {
 	 */
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public static void main(String[] args) {
-		WMSClientJDBCImpl wmsClient = new WMSClientJDBCImpl();
-		wmsClient.setUrl(null);
-		String url = wmsClient.getUrl();
-		String username = "aoch";
-		String password = "ern8UwzE";
-		String sql = "SELECT item_id, item_type, STATUS_NAME, title, CLIENT_PRIORITY,INTERNAL_PRIORITY,RESPONSIBLE_ANALYST,REQUESTED_DELIVERY_DATE,COMMITMENT_DATE,external_reference,DESCRIPTION "
-				+ "FROM item_rpt "
-				+ "WHERE external_reference like '%WSC%' "
-				+ "AND item_type = 'TR' " + "ORDER BY CLIENT_PRIORITY";
-
-		ResultSet rs = wmsClient.query(url, username, password, sql);
-		System.out.println("Started");
-		try {
-			while (rs.next()) {
-				System.out.println(rs.getString("item_id"));
-			}
-		} catch (SQLException e) {
-			logger.error(e.getLocalizedMessage());
-		}
-		System.out.println("Complete");
-	}
-
-	/**
-	 * Print out all column names for a result set
-	 * 
-	 * @param resultSet
-	 * @throws SQLException
-	 */
-	public static void getColumnNames(ResultSet resultSet) throws SQLException {
-		if (resultSet == null) {
-			return;
-		}
-
-		// get result set meta data
-		ResultSetMetaData rsMetaData = resultSet.getMetaData();
-		int numberOfColumns = rsMetaData.getColumnCount();
-
-		// get the column names; column indexes start from 1
-		for (int i = 1; i < numberOfColumns + 1; i++) {
-			String columnName = rsMetaData.getColumnName(i);
-			// Get the name of the column's table name
-			String tableName = rsMetaData.getTableName(i);
-			System.out.println("column name=" + columnName + " table="
-					+ tableName + "");
-		}
 	}
 }
