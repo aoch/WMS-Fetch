@@ -28,8 +28,8 @@ COMPATIBLE SOFTWARE VERSIONS:
 Compatible Components:
     $dependencyVersions
 
-FTP ADDRESS:
-    $ftpURL
+DOWNLOAD ADDRESS:
+    $httpURL
 
 IMPORTANT NOTES:
     $notes
