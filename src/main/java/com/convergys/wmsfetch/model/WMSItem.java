@@ -38,6 +38,26 @@ public class WMSItem implements Serializable {
 	public static final String statusKey = "STATUS_NAME";
 	public static final String developerKey = "RESPONSIBLE_ANALYST";
 
+	/**
+	 * 
+	 * @param release
+	 * @return version
+	 */
+	public static String getVersion(String release) {
+		String[] versionDirty = release.split("\\.");
+		StringBuffer version = new StringBuffer("");
+		for (int i = 0; i < versionDirty.length; i++) {
+			if (i > 0) {
+				version.append(versionDirty[i] + ".");
+			}
+
+			if (i == versionDirty.length - 1) {
+				version.deleteCharAt(version.length() - 1);
+			}
+		}
+		return version.toString();
+	}
+
 	private String id;
 
 	private String title;

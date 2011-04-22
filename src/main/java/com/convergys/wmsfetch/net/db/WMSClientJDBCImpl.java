@@ -66,8 +66,12 @@ public class WMSClientJDBCImpl implements IWMSClient {
 	}
 
 	public static void main(String[] args) {
-		// queryWrongExtRefTRs();
+		System.out.println("START queryWrongExtRefTRs");
+		queryWrongExtRefTRs();
+		System.out.println("COMPLETE queryWrongExtRefTRs");
+		System.out.println("START queryOutstandingTRs");
 		queryOutstandingTRs();
+		System.out.println("COMPLETE queryOutstandingTRs");
 	}
 
 	private static void queryWrongExtRefTRs() {
@@ -82,7 +86,7 @@ public class WMSClientJDBCImpl implements IWMSClient {
 				+ "AND item_type = 'TR' " + "ORDER BY CLIENT_PRIORITY";
 
 		ResultSet rs = wmsClient.query(url, username, password, sql);
-		System.out.println("Started");
+
 		try {
 			while (rs.next()) {
 				System.out.println(rs.getString("item_id"));
@@ -90,7 +94,7 @@ public class WMSClientJDBCImpl implements IWMSClient {
 		} catch (SQLException e) {
 			logger.error(e.getLocalizedMessage());
 		}
-		System.out.println("Complete");
+
 	}
 
 	private static void queryOutstandingTRs() {

@@ -1,6 +1,7 @@
 package com.convergys.wmsfetch.releasenotes;
 
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,7 +84,7 @@ public class WMSReleaseNoteMgr {
 	 */
 	public boolean generateReleaseNotes(Type type, String username,
 			String password, String wmsReleaseID, String url,
-			Map<String,String> variablesMap) {
+			Map<String, String> variablesMap) {
 		boolean success = false;
 
 		List<WMSItem> wmsItems = null;
@@ -102,6 +103,11 @@ public class WMSReleaseNoteMgr {
 		if (wmsItems != null) {
 			releaseNoteGenerator.addVariables(variablesMap);
 			if (type == Type.RELEASE) {
+				Map<String, String> variables = new HashMap<String, String>();
+				String version = WMSItem.getVersion(wmsReleaseID);
+				variables.put("version", version);
+				variables.put("release", wmsReleaseID);
+				releaseNoteGenerator.addVariables(variables);
 				success = releaseNoteGenerator.generate(wmsItems, getOutput());
 			} else {
 				if (wmsItems.size() == 1 && type == Type.PATCH) {

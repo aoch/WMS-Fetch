@@ -49,7 +49,13 @@ public class ReleaseNoteGeneratorImpl implements IReportGenerator {
 	private String eol = "\r\n";
 
 	public void addVariables(Map<String, String> variableMap) {
-		this.variableMap = variableMap;
+		if (this.variableMap == null) {
+			this.variableMap = new HashMap<String, String>();
+		}
+		
+		if(variableMap != null) {
+			this.variableMap.putAll(variableMap);
+		}
 	}
 
 	private boolean generate(HashMap<String, String> variables,
@@ -200,10 +206,6 @@ public class ReleaseNoteGeneratorImpl implements IReportGenerator {
 
 		if (wmsItems != null) {
 			for (WMSItem wmsItem : wmsItems) {
-				String version = getVersion(wmsItem.getRelease());
-				variables.put("version", version);
-				variables.put("release", wmsItem.getRelease());
-
 				String infoLine = String.format(
 						" %s\tSeverity: [%s]\t%s\t%s\n", new Object[] {
 								wmsItem.getId(), wmsItem.getSeverity(),
@@ -239,26 +241,6 @@ public class ReleaseNoteGeneratorImpl implements IReportGenerator {
 			logger.warn("wmsItems is NULL");
 		}
 		return variables;
-	}
-
-	/**
-	 * 
-	 * @param release
-	 * @return version
-	 */
-	public String getVersion(String release) {
-		String[] versionDirty = release.split("\\.");
-		StringBuffer version = new StringBuffer("");
-		for (int i = 0; i < versionDirty.length; i++) {
-			if (i > 0) {
-				version.append(versionDirty[i] + ".");
-			}
-
-			if (i == versionDirty.length - 1) {
-				version.deleteCharAt(version.length() - 1);
-			}
-		}
-		return version.toString();
 	}
 
 	/**

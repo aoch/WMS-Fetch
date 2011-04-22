@@ -4,7 +4,7 @@
 	<groupId>com.convergys</groupId>
 	<artifactId>wmsfetch</artifactId>
 	<packaging>maven-plugin</packaging>
-	<version>1.0.15</version>
+	<version>1.0.17</version>
 	<name>WMSFetch</name>
 	<organization>
 		<name>Convergys</name>
@@ -40,7 +40,7 @@
 		<jar.package.short.name>wmsfetch</jar.package.short.name>
 		<jar.package.version.major>1</jar.package.version.major>
 		<jar.package.version.submajor>00</jar.package.version.submajor>
-		<jar.package.version.subminor>012</jar.package.version.subminor>
+		<jar.package.version.subminor>017</jar.package.version.subminor>
 		<jar.package.name>${jar.package.short.name}-${jar.package.version.major}.${jar.package.version.submajor}.${jar.package.version.subminor}-bin
 		</jar.package.name>
 		<jar.source.package.name>${jar.package.short.name}-${jar.package.version.major}.${jar.package.version.submajor}.${jar.package.version.subminor}-src
